@@ -47,7 +47,7 @@ def fetch_package(info):
 def build(app):
     CACHE.mkdir(exist_ok=True)
     exe = CACHE / "usr/bin/discord-phoenix"
-    seven = shutil.which("7z") or r"C:\Program Files\7-Zip\7z.exe"
+    seven = shutil.which("7zz") or shutil.which("7z") or r"C:\Program Files\7-Zip\7z.exe"
     driver = Path("usr/lib/discord-phoenix/modules/discord_cef-0/discord_cef")
     icd = driver / "vk_swiftshader_icd.json"
     swiftshader = driver / "libvk_swiftshader.so"

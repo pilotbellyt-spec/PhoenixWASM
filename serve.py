@@ -4,14 +4,16 @@ import os
 import re
 import tarfile
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import certifi
 from aiohttp import WSMsgType, web
 
 ROOT = Path(__file__).resolve().parent
 RUNTIME = ROOT / "node_modules/@gexemu/runtime"
-PORT = int(os.environ.get("PHOENIX_PORT", "8789"))
+PORT = int(os.environ.get("PORT", os.environ.get("PHOENIX_PORT", "8789")))
 LOCAL_HOSTS = {f"localhost:{PORT}", f"127.0.0.1:{PORT}"}
+PUBLIC_ORIGIN = os.environ.get("PUBLIC_ORIGIN", os.environ.get("RENDER_EXTERNAL_URL", "")).rstrip("/")
 DISCORD_DOMAINS = (
     "discord.com", "discord.gg", "discordapp.com", "discordapp.net", "discord.media", "discordcdn.com",
     "assets.sunbird.tools", "badges.equicord.org", "sponsor.ajay.app", "dearrow-thumb.ajay.app",
@@ -26,7 +28,10 @@ async def isolation_headers(request, response):
 
 
 async def tcp(request):
-    if request.host not in LOCAL_HOSTS or request.headers.get("Origin") != "http://" + request.host:
+    origin = PUBLIC_ORIGIN or "http://" + request.host
+    allowed_host = urlsplit(PUBLIC_ORIGIN).netloc if PUBLIC_ORIGIN else None
+    if (request.host not in ({allowed_host} if allowed_host else LOCAL_HOSTS)
+            or request.headers.get("Origin") != origin):
         raise web.HTTPForbidden()
     host = request.query.get("host", "").lower()
     allowed = host == "ciscobinary.openh264.org" or any(
@@ -122,10 +127,19 @@ async def asset(request):
     return web.FileResponse(path, headers=headers)
 
 
+async def health(request):
+    required = [RUNTIME / "index.mjs", ROOT / ".build/linux.tar",
+                ROOT / ".build/sunbird.tar", ROOT / ".build/gex-memory64.wasm",
+                ROOT / ".build/usr/bin/discord-phoenix"]
+    ready = all(path.is_file() for path in required)
+    return web.json_response({"status": "ready" if ready else "missing assets"}, status=200 if ready else 503)
+
+
 if __name__ == "__main__":
     app = web.Application()
     app.on_response_prepare.append(isolation_headers)
+    app.router.add_get("/healthz", health)
     app.router.add_get("/tcp", tcp, allow_head=False)
     app.router.add_get("/phoenix.tar", phoenix_tar)
     app.router.add_get("/{path:.*}", asset)
-    web.run_app(app, host="127.0.0.1", port=PORT, access_log=None)
+    web.run_app(app, host=os.environ.get("HOST", "127.0.0.1"), port=PORT, access_log=None)

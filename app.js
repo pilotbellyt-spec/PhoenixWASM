@@ -88,7 +88,7 @@ async function start() {
     sys.network = {
         async connect(host, port) {
             const url = new URL("/tcp", location.href);
-            url.protocol = "ws:";
+            url.protocol = location.protocol === "https:" ? "wss:" : "ws:";
             url.search = new URLSearchParams({ host, port });
             const socket = new WebSocketStream(url.href);
             // The streams and opened promise already propagate connection failures.

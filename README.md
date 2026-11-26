@@ -10,6 +10,12 @@ Phoenix currently reports that the Linux OS keychain is unavailable. Persistent 
 
 The browser loads the original Linux ELF from the supplied AppImage. The Phoenix process uses memory64. GEX supplies Linux system calls, a browser Wayland compositor and XWayland. The guest loads its keyboard data, fonts and shared libraries from a local tar archive. The AppImage's SwiftShader Vulkan driver renders the signed-out GPUI window. A preload library enables the system XKB include paths when GPUI reads the compositor's keyboard map.
 
+## Render deployment
+
+The Docker build compiles the pinned Sunbird loader and memory64 runtime, then downloads and verifies the AppImage using the `APPIMAGE_URL` and `APPIMAGE_SHA256` build arguments. Generated assets are kept in the container image. The repository remains source-only.
+
+`render.yaml` selects a free web service. Set both AppImage variables when creating the service. Render provides its public origin through `RENDER_EXTERNAL_URL`. The server uses that origin for WebSocket validation, supports HTTPS through Render's proxy, and listens on `0.0.0.0:$PORT` inside the container. `/healthz` reports whether all required runtime assets exist. Free-service sleep, bandwidth and outbound-traffic limits apply.
+
 ## Discord network
 
 Open [Phoenix](http://localhost:8789/) in Chrome and select **Run Phoenix**. The same server carries the desktop's outbound TCP connections on port 443. Phoenix negotiates TLS with Discord and validates its certificate using the guest's CA bundle. HTTPS API requests and secure gateway WebSockets share this path. The relay accepts connections from the local launcher to Discord service domains and the Cisco OpenH264 download host. Voice and video UDP are outside the current transport.

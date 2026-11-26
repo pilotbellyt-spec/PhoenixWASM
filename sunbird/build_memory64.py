@@ -1,6 +1,6 @@
 """Rebuild GEX's memory64 shim with its low arena extended to the 4 GiB boundary."""
 
-import os, subprocess
+import os, subprocess, shutil
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
@@ -33,11 +33,12 @@ flags.extend(
     ]
 )
 env = {**os.environ, "RUSTC_BOOTSTRAP": "1", "RUSTFLAGS": " ".join(flags)}
-cargo = Path.home() / ".cargo/bin/cargo.exe"
+cargo = shutil.which("cargo") or str(Path.home() / ".cargo/bin/cargo.exe")
+toolchain = ["+stable-x86_64-pc-windows-gnu"] if os.name == "nt" else []
 subprocess.run(
     [
         cargo,
-        "+stable-x86_64-pc-windows-gnu",
+        *toolchain,
         "build",
         "--manifest-path",
         root / ".build/gex/Cargo.toml",
@@ -56,8 +57,6 @@ subprocess.run(
     check=True,
 )
 
-
-import shutil
 
 shutil.copyfile(
     root / ".build/gex-m64-target/wasm64-unknown-unknown/release/gex_browser.wasm",
