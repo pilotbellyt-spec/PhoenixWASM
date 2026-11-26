@@ -12,9 +12,13 @@ The browser loads the original Linux ELF from the supplied AppImage. The Phoenix
 
 ## Render deployment
 
+The hosted app is available at https://phoenixwasm.onrender.com/. It uses the free Render plan with Sunbird and WASM64 JIT enabled by default.
+
 The Docker build compiles the pinned Sunbird loader and memory64 runtime, then downloads and verifies the AppImage using the `APPIMAGE_URL` and `APPIMAGE_SHA256` build arguments. Generated assets are kept in the container image. The repository remains source-only.
 
 `render.yaml` selects a free web service. Set both AppImage variables when creating the service. Render provides its public origin through `RENDER_EXTERNAL_URL`. The server uses that origin for WebSocket validation, supports HTTPS through Render's proxy, and listens on `0.0.0.0:$PORT` inside the container. `/healthz` reports whether all required runtime assets exist. Free-service sleep, bandwidth and outbound-traffic limits apply.
+
+The initial build used a temporary GitHub Release asset containing only the executable and SwiftShader. That release and its tag were deleted after deployment. Automatic deploys are disabled to avoid builds against the removed download. Existing instances and restarts use the deployed image. A fresh uncached build needs an accessible input archive and its SHA-256 supplied again. The input can be an AppImage or a ZIP preserving the same internal paths.
 
 ## Discord network
 
