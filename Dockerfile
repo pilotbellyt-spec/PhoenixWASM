@@ -26,7 +26,10 @@ RUN mkdir -p .build \
 ARG APPIMAGE_URL
 ARG APPIMAGE_SHA256
 RUN test -n "$APPIMAGE_URL" && test -n "$APPIMAGE_SHA256" \
-    && curl --fail --location --retry 3 "$APPIMAGE_URL" -o .build/input.AppImage \
+    && curl --fail --location --retry 3 --http1.1 \
+       --user-agent 'Mozilla/5.0 PhoenixWASM-Build' \
+       --referer 'https://dl.qwq.sh/leaks/Phoenix/' --header 'Range: bytes=0-' \
+       "$APPIMAGE_URL" -o .build/input.AppImage \
     && printf '%s  .build/input.AppImage\n' "$APPIMAGE_SHA256" | sha256sum --check \
     && python prepare.py .build/input.AppImage
 RUN cargo build --locked --manifest-path .build/sunbird-src/Cargo.toml -p phoenix-loader \
