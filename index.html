@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,"><title>Phoenix WASM</title>
+<style>
+:root{color-scheme:dark;font:16px system-ui;background:#15161a;color:#ececf0}body{max-width:1400px;margin:2rem auto;padding:0 1rem}
+header{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}h1{font-size:1.5rem;margin-right:auto}
+button{padding:.6rem 1rem;cursor:pointer}pre{font:13px/1.5 monospace;background:#0d0e11;padding:1rem;max-height:36vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+#screen{position:relative;width:100%;min-height:640px;height:80vh;overflow:auto}#log:empty{display:none}
+.expanded{margin:0;padding:0;max-width:none;overflow:hidden}
+.expanded #screen{position:fixed;inset:0;width:100%;height:100dvh;min-height:0;overflow:hidden}
+.expanded header,.expanded #status,.expanded #details{display:none}
+.expanded #expand{display:block;position:fixed;top:8px;right:8px;z-index:2147483647}
+.expanded header:has(#expand){display:contents}
+.expanded header>*:not(#expand){display:none}
+</style>
+<header><h1>Phoenix WASM</h1><button id="run">Run Phoenix</button><button id="reload" hidden>Restart</button><button id="expand" aria-pressed="false" aria-controls="screen">Expand</button></header>
+<p id="status" role="status"></p><details id="details"><summary>Startup log</summary><pre id="log" aria-label="Phoenix startup log"></pre></details><div id="screen"></div>
+<script type="module" src="/app.js"></script></html>

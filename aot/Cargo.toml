@@ -1,0 +1,13 @@
+[package]
+name = "phoenix-aot"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+anyhow = "1"
+gex-abi = { path = "../.build/gex/crates/gex-abi", features = ["x86"] }
+gex-cgen = { path = "../.build/gex/crates/gex-cgen" }
+gex-ld = { path = "../.build/gex/crates/gex-ld" }
+gex-xlate = { path = "../.build/gex/crates/gex-xlate", features = ["x86"] }
+tempfile = "3"

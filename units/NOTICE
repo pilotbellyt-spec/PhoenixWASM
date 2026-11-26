@@ -1,0 +1,10 @@
+These two WASM64 modules implement the GEX x86-64 glibc memory and math providers.
+Source: https://github.com/HeyPuter/gex/tree/c690edca39a092a2ed2222d040567093545a6858/crates/gex-cgen/providers
+License: AGPL-3.0-only (LICENSE).
+The local build used GEX provider::build with MemFlavor::M64, LF source line endings, and Zig 0.14.1's clang and wasm-ld.
+The corresponding upstream CLI command on a GEX build host is:
+GEX_CGEN_CACHE="$PWD/units" target/x86/release/gexc cgen-image --providers --elf --mem64
+
+The image-keyed c.wasm and c.entries are the output of running the project’s
+aot/src/main.rs on Debian trixie libxkbcommon0 1.7.0-2 (amd64).
+The library's copyright and license notices are in libxkbcommon.COPYING.

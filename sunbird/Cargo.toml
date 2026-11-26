@@ -1,0 +1,18 @@
+[package]
+name = "sunbird-ui"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+phoenix-ui-mobile = { path = "../.build/sunbird-src/crates/ui-mobile" }
+serde_json = "1"
+
+[profile.release]
+opt-level = "s"
+lto = true
+panic = "abort"
+strip = true
