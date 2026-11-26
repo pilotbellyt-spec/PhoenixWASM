@@ -2,6 +2,8 @@
 
 Open http://127.0.0.1:8789/ in Chrome and select **Run Phoenix**. Use http://127.0.0.1:8789/?check for a bounded startup check. It stops the guest once Phoenix emits its own main_init milestone. Restart saves the guest filesystem before reloading.
 
+The default launch runs Sunbird with x86-64 to WASM64 JIT translation. Add `?sunbird=0` to launch Phoenix without Sunbird. Precompiled translation modes remain available through their query parameters.
+
 Normal launches keep changed guest files in the browser's origin private filesystem, including Phoenix's cache database and Sunbird settings. Files are flushed within one second, on guest fsync, and on Restart. The runtime also flushes when the page is hidden or left. One running tab can hold this filesystem at a time. Browser storage is separate for each hostname and port, so keep using the same URL. Private browsing and clearing site data remove that browser's files. Add `&volatile` to the Sunbird URL for a temporary session.
 
 Phoenix currently reports that the Linux OS keychain is unavailable. Persistent guest files therefore do not establish persistent account authentication. Login may still be required after restarting.
@@ -18,7 +20,7 @@ To verify the connection without a Discord account, install Go and Playwright an
 
 | Chrome URL | What runs |
 | --- | --- |
-| [Default](http://localhost:8789/) or [plain JIT](http://localhost:8789/?jit) | Runtime x86-64 to WASM64 translation. This had the fastest first compositor frame in the latest sequential comparison. |
+| [Default](http://localhost:8789/) or [JIT](http://localhost:8789/?jit) | Sunbird with runtime x86-64 to WASM64 translation. |
 | [Precompiled functions](http://localhost:8789/?providers) | Precompiled WASM64 implementations of glibc memory and math functions, with runtime translation for remaining x86 instructions. |
 | [Recorded Phoenix instructions](http://localhost:8789/?recorded) | Installs a small recording of machine-code blocks from the original Phoenix executable before launch. The guest log reports how many modules GEX restores. |
 | [AOT keyboard library](http://localhost:8789/?keyboard) | Loads selected keyboard lookup functions statically translated from the Debian x86-64 libxkbcommon ELF at its observed load address. GEX checks the image and compiler fingerprint. |
@@ -33,6 +35,10 @@ From this directory on Windows, install 7-Zip and ensure Python, Node.js and cur
 ./setup.ps1
 python -m pip install pyelftools ziglang==0.14.1 "aiohttp>=3.12,<4" certifi
 python prepare.py "$env:USERPROFILE\Downloads\discord-desktop-0.1.0-dev.20261123093910.gb71ec80-linux-x64.AppImage"
+rustup target add x86_64-unknown-linux-gnu --toolchain stable-x86_64-pc-windows-gnu
+rustup component add rust-src --toolchain stable-x86_64-pc-windows-gnu
+./sunbird/build-linux.ps1
+python sunbird/build_memory64.py
 python serve.py
 ```
 

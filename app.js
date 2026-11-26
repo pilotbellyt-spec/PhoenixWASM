@@ -8,6 +8,7 @@ const output = document.querySelector("#log");
 const status = document.querySelector("#status");
 const options = new URLSearchParams(location.search);
 const checkOnly = options.has("check");
+const sunbirdEnabled = options.get("sunbird") !== "0";
 const useTranslations = !options.has("jit") &&
     ["providers", "keyboard", "recorded", "train"].some(mode => options.has(mode));
 
@@ -126,7 +127,6 @@ async function start() {
     }, 2000);
     sys.addEventListener("crash", e => log(e.name + ": " + e.reason));
     fs.addTar("/linux.tar");
-    const sunbirdEnabled = options.has("sunbird");
     if (sunbirdEnabled) fs.addTar("/sunbird.tar");
     const caFile = "/etc/ssl/certs/ca-certificates.crt";
     fs.addFiles({ [caFile]: new URL("/ca.pem", location.href) }, { mode: 0o644 });

@@ -1,6 +1,6 @@
 # Sunbird UI codec for WASM64
 
-The full Linux desktop loader is also available at http://localhost:8790/?sunbird in the test server. It runs inside Phoenix's WASM64 process with upstream QuickJS, SQLite, native hooks and all 17 bundled plugins. The separate mobile UI codec below remains available.
+The full Linux desktop loader runs by default at http://localhost:8789/. It runs inside Phoenix's WASM64 process with upstream QuickJS, SQLite, native hooks and all 17 bundled plugins. The separate mobile UI codec below remains available.
 
 Run `sunbird/build-linux.ps1` to rebuild the Linux loader and package its plugins and libcurl dependencies. Run `python sunbird/build_memory64.py` to rebuild GEX's memory64 shim. These commands use the local Sunbird and GEX checkouts under `.build`.
 

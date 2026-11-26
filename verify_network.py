@@ -29,7 +29,7 @@ if __name__ == "__main__":
     with sync_playwright() as pw, pw.chromium.launch(channel="chrome") as browser:
         page = browser.new_page()
         page.route("**/phoenix.tar", lambda route: route.fulfill(body=payload, content_type="application/x-tar"))
-        page.goto("http://localhost:8789/?volatile")
+        page.goto("http://localhost:8789/?volatile&sunbird=0")
         page.click("#run")
         page.wait_for_function("""() => {
             const log = document.querySelector('#log').textContent;

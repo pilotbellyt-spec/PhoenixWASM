@@ -33,7 +33,7 @@ if __name__ == "__main__":
             with pw.chromium.launch(channel="chrome") as browser:
                 page = browser.new_page()
                 page.route("**/phoenix.tar", lambda route: route.fulfill(body=payload, content_type="application/x-tar"))
-                page.goto("http://127.0.0.1:8789/?" + mode)
+                page.goto("http://127.0.0.1:8789/?" + mode + "&sunbird=0")
                 page.click("#run")
                 page.wait_for_function("document.querySelector('#log').textContent.includes('Copy benchmark complete')")
                 rows = re.findall(r"Copy sample ([0-9.]+) s checksum=(\d+)", page.locator("#log").text_content())
