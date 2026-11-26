@@ -1,6 +1,6 @@
 """Package the upstream desktop loader, plugins and Linux HTTP dependencies."""
 
-import io, json, lzma, subprocess, tarfile, zipfile
+import io, json, lzma, os, subprocess, tarfile, zipfile
 from pathlib import Path
 from elftools.elf.elffile import ELFFile
 from prepare import CACHE, LIB, data_tar, fetch_package
@@ -14,6 +14,8 @@ def package():
         raise RuntimeError("Build phoenix-loader for Linux first")
     entries = {}
     bundle = {}
+    esbuild = (["node", "node_modules/esbuild/bin/esbuild"] if os.name == "nt"
+               else [str(Path("node_modules/esbuild/bin/esbuild").resolve())])
     for entry in sorted((SRC / "plugins").glob("*/src/index.ts")):
         name = entry.parents[1].name
         if name == "example":
@@ -22,8 +24,7 @@ def package():
         dest.parent.mkdir(exist_ok=True)
         subprocess.run(
             [
-                "node",
-                "node_modules/esbuild/bin/esbuild",
+                *esbuild,
                 str(entry),
                 "--bundle",
                 "--format=iife",

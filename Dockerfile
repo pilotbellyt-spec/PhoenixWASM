@@ -13,7 +13,6 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY --from=javascript /usr/local/bin/node /usr/local/bin/node
 COPY --from=javascript /app/node_modules ./node_modules
-COPY . .
 RUN mkdir -p .build \
     && git init .build/gex \
     && git -C .build/gex remote add origin https://github.com/HeyPuter/gex \
@@ -30,8 +29,10 @@ RUN test -n "$APPIMAGE_URL" && test -n "$APPIMAGE_SHA256" \
        --user-agent 'Mozilla/5.0 PhoenixWASM-Build' \
        --referer 'https://dl.qwq.sh/leaks/Phoenix/' --header 'Range: bytes=0-' \
        "$APPIMAGE_URL" -o .build/input.AppImage \
-    && printf '%s  .build/input.AppImage\n' "$APPIMAGE_SHA256" | sha256sum --check \
-    && python prepare.py .build/input.AppImage
+    && printf '%s  .build/input.AppImage\n' "$APPIMAGE_SHA256" | sha256sum --check
+COPY prepare.py wayland-keymap.c ./
+RUN python prepare.py .build/input.AppImage
+COPY . .
 RUN cargo build --locked --manifest-path .build/sunbird-src/Cargo.toml -p phoenix-loader \
     --target x86_64-unknown-linux-gnu --profile dev-fast --target-dir .build/sunbird-linux-target \
     && python prepare_sunbird.py
